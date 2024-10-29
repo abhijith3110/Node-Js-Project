@@ -1,20 +1,26 @@
 import http from "http";
 import { URL } from "url";
-const port = 5000;
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const port = process.env.PORT ||   5000;
 
 const server = http.createServer((req, res) => {
   res.setHeader("Content-Type", "text/html");
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  // console.log(url);
-
   if (url.pathname === "/") {
     res.write("<h1>Home Page</h1><p>This is the Home page</p>");
   } else if (url.pathname.startsWith("/about")) {
     const id = url.pathname.split("/")[2];
+    const name = url.searchParams.get("name")
     res.write(
       `<h1>About</h1><p>This is the about page for ID No. ${
         id ? id : "NOT GETTING ID"
+      }</p>
+      <p>This is the about page for. ${
+        name ? name.toUpperCase() : "NOT GETTING name"
       }</p>`
     );
   } else if (url.pathname === "/service") {
@@ -23,7 +29,7 @@ const server = http.createServer((req, res) => {
     const name = url.searchParams.get("name");
     res.write(
       `<h1>Contact</h1><p>This is the Contact Page of ${
-        name ? name.toUpperCase() : "USER NOT FOUND"
+        name ? name[0].toUpperCase() + name.slice(1).toLowerCase() : "USER NOT FOUND"
       }</p>`
     );
   } else {
@@ -38,6 +44,9 @@ const server = http.createServer((req, res) => {
   // console.log(res.statusCode);
   res.end();
 });
+
+
+
 
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`);
